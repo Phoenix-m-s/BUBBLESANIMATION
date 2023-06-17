@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* استایل‌های دایره‌های حبابی */
+        .bubble-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+        }
+
+        .bubble {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #00aaff;
+            cursor: pointer;
+
+            animation: bubble-animation 3s infinite;
+        }
+
+
+        .bubble1 {
+            position: absolute;
+            top: 30%;
+            left: 10%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #00aaff;
+            cursor: pointer;
+
+            animation: bubble-animation 3s infinite;
+        }
+
+        .bubble1:hover {
+            background-color: #3c43ff;
+        }
+
+        /* اضافه کردن انیمیشن */
+        @keyframes bubble-animation {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 0.5;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="bubble-container">
+    <div class="bubble"></div>
+    <div class="bubble1"></div>
+</div>
+</body>
+</html>
