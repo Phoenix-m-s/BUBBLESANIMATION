@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>دایره‌ها</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    #container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .circle {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background-color: #ccc;
+      margin: 10px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .circle.enlarged {
+      transform: scale(1.2);
+    }
+
+    .circle.move {
+      transition: transform 2s ease;
+    }
+  </style>
+</head>
+<body>
+<div id="container"></div>
+
+<script>
+  var container = document.getElementById('container');
+  var circles = [];
+
+  function createCircle() {
+    var circle = document.createElement('div');
+    circle.className = 'circle';
+
+    circle.addEventListener('click', function() {
+      if (!circle.classList.contains('enlarged')) {
+        circle.classList.add('enlarged');
+        circle.style.transform = 'translate(0, 0)';
+      }
+    });
+
+    container.appendChild(circle);
+
+    return circle;
+  }
+
+  for (var i = 0; i < 5; i++) {
+    circles.push(createCircle());
+  }
+
+  document.addEventListener('click', function(event) {
+    if (!event.target.classList.contains('circle')) {
+      for (var i = 0; i < circles.length; i++) {
+        circles[i].classList.remove('enlarged');
+        circles[i].style.transform = 'translate(0, 0)';
+      }
+    }
+  });
+
+  container.addEventListener('click', function(event) {
+    var clickedCircle = event.target;
+    if (clickedCircle.classList.contains('circle') && !clickedCircle.classList.contains('enlarged')) {
+      var offsetX = event.clientX - clickedCircle.getBoundingClientRect().left - (clickedCircle.offsetWidth / 2);
+      var offsetY = event.clientY - clickedCircle.getBoundingClientRect().top - (clickedCircle.offsetHeight / 2);
+      clickedCircle.style.transform = 'translate(' + offsetX + 'px, ' + offsetY + 'px)';
+    }
+  });
+
+</script>
+</body>
+</html>
