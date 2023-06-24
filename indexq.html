@@ -52,7 +52,7 @@
 </div>
 
 <script>
-    var bubbleCount = 20;
+    var bubbleCount = 90;
     var colors = ['#007bff', '#ff5500', '#00cc66', '#ff00ff', '#ffcc00']; // رنگ‌های مختلف
 
     var chart = document.getElementById("chart");
@@ -63,11 +63,10 @@
         bubble.className = "bubble";
 
         // Set bubble size and position
-        bubble.style.width = "50px";
-        bubble.style.height = "50px";
+        bubble.style.width = "70px";
+        bubble.style.height = "70px";
         bubble.style.left = Math.random() * (window.innerWidth - 50) + "px";
         bubble.style.top = Math.random() * (window.innerHeight - 50) + "px";
-
         // تعیین رنگ دایره
         bubble.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
 
