@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<canvas id="canvas" width="1000" height="300"></canvas>
+
+</body>
+<script>
+    // ایجاد شیء دایره
+    function Circle(x, y, radius, title, color) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.title = title;
+        this.color = color;
+        this.isDragging = false;
+        this.isClicked = false;
+        this.defaultRadius = radius;
+    }
+
+    // تابع برای رسم دایره‌ها و عناوین
+    function draw() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (var i = 0; i < circles.length; i++) {
+            var circle = circles[i];
+
+            // تغییر موقعیت دایره در حالت درگ
+            if (circle.isDragging) {
+                circle.x = mouseX - circle.dragOffsetX;
+                circle.y = mouseY - circle.dragOffsetY;
+            }
+
+            // تغییر اندازه دایره در حالت کلیک
+            if (circle.isClicked) {
+                circle.radius += 1;
+            } else {
+                circle.radius = circle.defaultRadius;
+            }
+
+            // تغییر رنگ دایره
+            context.fillStyle = circle.color;
+
+            // رسم دایره
+            context.beginPath();
+            context.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2);
+            context.fill();
+
+            // نمایش عنوان در دایره
+            context.fillStyle = '#000';
+            context.font = '12px Arial';
+            context.textAlign = 'center';
+            context.fillText(circle.title, circle.x, circle.y + circle.radius + 15);
+        }
+
+        requestAnimationFrame(draw);
+    }
+
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
+    var circles = [];
+    var mouseX = 0;
+    var mouseY = 0;
+    var selectedCircle = null;
+
+    // ایجاد 50 دایره تصادفی
+    for (var i = 0; i < 50; i++) {
+        var x = Math.random() * (canvas.width - 50) + 25;
+        var y = Math.random() * (canvas.height - 50) + 25;
+        var radius = 20;
+        var title = 'عنوان ' + (i + 1);
+        var color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+
+        var circle = new Circle(x, y, radius, title, color);
+        circles.push(circle);
+    }
+
+    // رسم دایره‌ها و عناوین
+    draw();
+
+    // تعیین موقعیت ماوس در صفحه
+    function getMousePos(event) {
+        var rect = canvas.getBoundingClientRect();
+        mouseX = event.clientX - rect.left;
+        mouseY = event.clientY - rect.top;
+    }
+
+    // تغییر وضعیت درگ هنگام کلیک روی دایره
+    canvas.addEventListener('mousedown', function(event) {
+        getMousePos(event);
+
+        for (var i = circles.length - 1; i >= 0; i--) {
+            var circle = circles[i];
+
+            var dx = mouseX - circle.x;
+            var dy = mouseY - circle.y;
+            var distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance <= circle.radius) {
+                selectedCircle = circle;
+                circle.isDragging = true;
+                circle.dragOffsetX = mouseX - circle.x;
+                circle.dragOffsetY = mouseY - circle.y;
+                break;
+            }
+        }
+    });
+
+    // تغییر وضعیت درگ هنگام رها کردن کلیک از دایره
+    canvas.addEventListener('mouseup', function() {
+        if (selectedCircle) {
+            selectedCircle.isDragging = false;
+        }
+    });
+
+    // تغییر وضعیت کلیک هنگام کلیک روی دایره
+    canvas.addEventListener('click', function(event) {
+        getMousePos(event);
+
+        for (var i = circles.length - 1; i >= 0; i--) {
+            var circle = circles[i];
+
+            var dx = mouseX - circle.x;
+            var dy = mouseY - circle.y;
+            var distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance <= circle.radius) {
+                circle.isClicked = true;
+                break;
+            }
+        }
+    });
+
+    // تغییر وضعیت کلیک هنگام رها کردن کلیک از دایره
+    canvas.addEventListener('mouseup', function() {
+        for (var i = 0; i < circles.length; i++) {
+            circles[i].isClicked = false;
+        }
+    });
+
+</script>
+</html>

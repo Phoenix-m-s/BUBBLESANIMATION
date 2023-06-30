@@ -1,88 +1,182 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>دایره‌ها</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-    }
-
-    #container {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .circle {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      background-color: #ccc;
-      margin: 10px;
-      cursor: pointer;
-      transition: transform 0.3s ease;
-    }
-
-    .circle.enlarged {
-      transform: scale(1.2);
-    }
-
-    .circle.move {
-      transition: transform 2s ease;
-    }
-  </style>
-</head>
+    <title>Animation of Music Player Circles</title>
+  </head>
 <body>
-<div id="container"></div>
-
+    <h1>Animation of Circles with Numbers</h1>
+    <canvas id="myCanvas" width="1500px" height="300px"></canvas>
+</body>
 <script>
-  var container = document.getElementById('container');
-  var circles = [];
+    // دریافت المان canvas از DOM
+    var canvas = document.getElementById("myCanvas");
+    var context = canvas.getContext("2d");
 
-  function createCircle() {
-    var circle = document.createElement('div');
-    circle.className = 'circle';
+    // تعریف آرایه‌ای برای ذخیره اطلاعات دایره‌ها
+    var circles = [];
 
-    circle.addEventListener('click', function() {
-      if (!circle.classList.contains('enlarged')) {
-        circle.classList.add('enlarged');
-        circle.style.transform = 'translate(0, 0)';
-      }
-    });
+    // تعریف متغیر برای ذخیره دایره‌ای که در حال جابجا شدن است
+    var draggedCircle = null;
+    var offsetX, offsetY;
 
-    container.appendChild(circle);
+    // آرایه حاوی رنگ‌ها
+    var colors = ["red", "blue", "green", "orange", "purple"];
 
-    return circle;
-  }
+    // آرایه حاوی متن‌ها
+    var texts = ["متن ۱", "متن ۲", "متن ۳", "متن ۴", "متن ۵"];
 
-  for (var i = 0; i < 5; i++) {
-    circles.push(createCircle());
-  }
 
-  document.addEventListener('click', function(event) {
-    if (!event.target.classList.contains('circle')) {
-      for (var i = 0; i < circles.length; i++) {
-        circles[i].classList.remove('enlarged');
-        circles[i].style.transform = 'translate(0, 0)';
-      }
+
+
+    // تابع ساخت دایره
+    function createCircle(x, y, radius, speedX, speedY, color, number) {
+        return {
+            x: x,
+            y: y,
+            radius: radius,
+            speedX: speedX,
+            speedY: speedY,
+            color: color,
+            number: number
+        };
     }
-  });
 
-  container.addEventListener('click', function(event) {
-    var clickedCircle = event.target;
-    if (clickedCircle.classList.contains('circle') && !clickedCircle.classList.contains('enlarged')) {
-      var offsetX = event.clientX - clickedCircle.getBoundingClientRect().left - (clickedCircle.offsetWidth / 2);
-      var offsetY = event.clientY - clickedCircle.getBoundingClientRect().top - (clickedCircle.offsetHeight / 2);
-      clickedCircle.style.transform = 'translate(' + offsetX + 'px, ' + offsetY + 'px)';
+    // تابع برای ساخت دایره‌ها و اضافه کردن آن‌ها به آرایه
+    function createCircles() {
+        var radius = 20;
+        var speedRange = 2;
+        var color = "blue";
+
+        for (var i = 0; i < 50; i++) {
+            var x = Math.random() * (canvas.width - 2 * radius) + radius;
+            var y = Math.random() * (canvas.height - 2 * radius) + radius;
+            var speedX = Math.random() * speedRange - speedRange / 2;
+            var speedY = Math.random() * speedRange - speedRange / 2;
+            var number = i + 1;
+
+            circles.push(createCircle(x, y, radius, speedX, speedY, color, number));
+        }
     }
-  });
+
+    // تابع برای رسم دایره‌ها و حرکت آن‌ها
+    function drawCircles() {
+        // پاک کردن canvas
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        // رسم هر دایره و تغییر موقعیت آن
+        for (var i = 0; i < circles.length; i++) {
+            var circle = circles[i];
+
+            context.beginPath();
+            context.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
+            context.fillStyle = circle.color;
+            context.fill();
+            context.closePath();
+
+            // تنظیم فونت برای شماره
+            var fontSize = circle.radius * 0.8;
+            context.font = fontSize + "px Arial";
+            context.fillStyle = "white";
+            context.textAlign = "center";
+            context.textBaseline = "middle";
+
+            // رسم شماره دایره
+            context.fillText(circle.number, circle.x, circle.y);
+        }
+    }
+
+    // تابع برای بررسی آیا موقعیت موس درون دایره است یا خیر
+    function isMouseInsideCircle(mouseX, mouseY, circle) {
+        var distance = Math.sqrt(Math.pow(mouseX - circle.x, 2) + Math.pow(mouseY - circle.y, 2));
+        return distance <= circle.radius;
+    }
+
+    // تابع برای بررسی کلیک موس بر روی دایره
+    function handleMouseDown(event) {
+        var rect = canvas.getBoundingClientRect();
+        var mouseX = event.clientX - rect.left;
+        var mouseY = event.clientY - rect.top;
+
+        // بررسی کلیک بر روی هر دایره
+        for (var i = 0; i < circles.length; i++) {
+            var circle = circles[i];
+
+            if (isMouseInsideCircle(mouseX, mouseY, circle)) {
+                // تنظیم دایره در حال جابجا شدن
+                draggedCircle = circle;
+                offsetX = mouseX - circle.x;
+                offsetY = mouseY - circle.y;
+                break;
+            }
+        }
+        // بررسی کلیک بر روی هر دایره
+        for (var i = 0; i < circles.length; i++) {
+            var circle = circles[i];
+
+            if (isMouseInsideCircle(mouseX, mouseY, circle)) {
+                // بزرگ کردن دایره
+                circle.radius += 5;
+                break;
+            }
+        }
+    }
+
+
+
+    // تابع برای جابجایی دایره با حرکت موس
+    function handleMouseMove(event) {
+        if (draggedCircle) {
+            var rect = canvas.getBoundingClientRect();
+            var mouseX = event.clientX - rect.left;
+            var mouseY = event.clientY - rect.top;
+
+            // تغییر موقعیت دایره به موقعیت موس
+            draggedCircle.x = mouseX - offsetX;
+            draggedCircle.y = mouseY - offsetY;
+
+            // محدود کردن موقعیت دایره در صفحه
+            if (draggedCircle.x < draggedCircle.radius) {
+                draggedCircle.x = draggedCircle.radius;
+            } else if (draggedCircle.x > canvas.width - draggedCircle.radius) {
+                draggedCircle.x = canvas.width - draggedCircle.radius;
+            }
+
+            if (draggedCircle.y < draggedCircle.radius) {
+                draggedCircle.y = draggedCircle.radius;
+            } else if (draggedCircle.y > canvas.height - draggedCircle.radius) {
+                draggedCircle.y = canvas.height - draggedCircle.radius;
+            }
+        }
+    }
+
+    // تابع برای رها کردن دایره بعد از درگ
+    function handleMouseUp() {
+        draggedCircle = null;
+    }
+
+    // اضافه کردن رویدادهای مربوط به درگ و رها کردن به canvas
+    canvas.addEventListener("mousedown", handleMouseDown);
+    canvas.addEventListener("mousemove", handleMouseMove);
+    canvas.addEventListener("mouseup", handleMouseUp);
+
+    // تابع حلقه انیمیشن
+    function animate() {
+        drawCircles();
+        requestAnimationFrame(animate);
+
+    }
+    // تابع بررسی آیا موقعیت موس درون دایره است یا خیر
+    function isMouseInsideCircle(mouseX, mouseY, circle) {
+        var distance = Math.sqrt(Math.pow(mouseX - circle.x, 2) + Math.pow(mouseY - circle.y, 2));
+        return distance <= circle.radius;
+    }
+
+
+
+
+    // فراخوانی توابع ساخت دایره‌ها و شروع انیمیشن
+    createCircles();
+    animate();
 
 </script>
-</body>
 </html>
