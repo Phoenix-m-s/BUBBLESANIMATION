@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Move Circles</title>
+  <meta charset="utf-8">
+  <style>
+    .circle {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      position: absolute;
+      background-color: #FF0000;
+      transition: transform 0.5s ease-in-out;
+      cursor: move;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: #1f1b1b;
+      font-weight: bold;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .circle:hover {
+      transform: scale(1.2) rotate(360deg);
+    }
+
+    .post {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background-color: lightgray;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+<div id="container"></div>
+
+<form id="circle-form" class="post">
+  <label for="circle-title">عنوان دایره:</label>
+  <input type="text" id="circle-title" name="circle-title">
+  <button type="submit">ارسال</button>
+</form>
+<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+
+<script>
+  // تعریف دایره‌ها با عناوین مختلف
+  const circlesData = [
+    { title: 'دایره ۱', color: '#eeabab' },
+    { title: 'دایره ۲', color: '#9dfb9d' },
+    { title: 'دایره ۳', color: '#cecefe' },
+    // ...
+  ];
+
+  // ایجاد دایره‌ها
+  circlesData.forEach((circleData, index) => {
+    const circle = document.createElement('div');
+    circle.className = 'circle';
+    circle.innerHTML = circleData.title;
+    circle.style.top = getRandomPosition() + 'px';
+    circle.style.left = getRandomPosition() + 'px';
+    circle.style.backgroundColor = circleData.color;
+    circle.addEventListener('click', () => {
+      enlargeCircle(circle, circleData.title);
+    });
+    document.getElementById('container').appendChild(circle);
+  });
+
+
+  // تابع تولید موقعیت تصادفی
+  function getRandomPosition() {
+    return Math.floor(Math.random() * 500);
+  }
+
+
+  // برای بزرگ کردن دایره و پست
+  function enlargeCircle(circle, title) {
+    circle.style.transform = 'scale(1.5)';
+    document.getElementById('circle-title').value = title;
+  }
+
+
+  // برای جابجایی دایره‌ها
+  interact('.circle')
+          .draggable({
+            onmove: dragMoveListener,
+          });
+
+  // تابع شروع جابجایی
+  function dragMoveListener(event) {
+    const target = event.target;
+    const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+    const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+    target.style.transform = `translate(${x}px, ${y}px)`;
+
+    target.setAttribute('data-x', x);
+    target.setAttribute('data-y', y);
+  }
+
+
+  // ارسال فرم
+  document.getElementById('circle-form').addEventListener('submit', (event) => {
+    event.preventDefault();
+    const title = document.getElementById('circle-title').value;
+    document.getElementById('post-title').textContent = title;
+  });
+
+
+
+
+</script>
+</body>
+</html>
