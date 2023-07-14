@@ -1,16 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-
-    <style>
-        canvas {
-            border: 1px solid #000;
-        }
-    </style>
     <meta charset="utf-8"></meta>
 </head>
 <body>
-<canvas id="myCanvas" width="800" height="400"></canvas>
+<canvas id="myCanvas" width="1200" height="500"></canvas>
 <button onclick="postSelectedTitles()">ارسال</button>
 <div id="postedTitles"></div>
 
@@ -41,7 +35,7 @@
         ctx.lineWidth = 1;
         ctx.strokeStyle = "#000";
         ctx.stroke();
-        ctx.font = "12px Arial";
+        ctx.font = "14px Arial";
         ctx.fillStyle = "#000";
         ctx.fillText(this.title, this.x - 20, this.y);
     };
@@ -108,10 +102,10 @@
     }
 
     // ایجاد 50 دایره با موقعیت و رنگ تصادفی
-    for (var i = 0; i < 50; i++) {
+    for (var i = 0; i < 15; i++) {
         var x = Math.random() * (canvas.width - 40) + 20;
         var y = Math.random() * (canvas.height - 40) + 20;
-        var radius = 20;
+        var radius = 70;
         var color = "#" + ((Math.random() * 0xffffff) << 0).toString(16);
         var title = "عنوان " + (i + 1);
         var dx = Math.random() * 2 - 1; // سرعت حرکت افقی
