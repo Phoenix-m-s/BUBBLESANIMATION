@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8"></meta>
+    <meta charset="UTF-8">
+    <title>Title</title>
 </head>
 <body>
-<canvas id="myCanvas" width="1400" height="800"></canvas>
+<canvas id="myCanvas" width="1200" height="400"></canvas>
 <button onclick="postSelectedTitles()">ارسال</button>
 <div id="postedTitles"></div>
-
-<script >
+</body>
+<script>
     // تعریف متغیرها
     var canvas = document.getElementById("myCanvas");
     var ctx = canvas.getContext("2d");
@@ -35,7 +36,7 @@
         ctx.lineWidth = 1;
         ctx.strokeStyle = "#000";
         ctx.stroke();
-        ctx.font = "14px Arial";
+        ctx.font = "12px Arial";
         ctx.fillStyle = "#000";
         ctx.fillText(this.title, this.x - 20, this.y);
     };
@@ -96,16 +97,30 @@
             selectedTitles.push(circle.title);
         }
 
-        // ارسال عناوین دایره‌های انتخاب شده
-        var postedTitlesElement = document.getElementById("postedTitles");
-        postedTitlesElement.innerHTML = selectedTitles.join(", ");
+        // ارسال عناوین دایره‌های انتخاب شده با Ajax
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "post_titles.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                // دریافت پاسخ و نمایش آن
+                var response = xhr.responseText;
+                document.getElementById("postedTitles").innerHTML = response;
+            }
+        };
+
+        // تبدیل عناوین به پارامتر ارسالی
+        var params = "titles=" + encodeURIComponent(selectedTitles.join(", "));
+
+        // ارسال درخواست Ajax
+        xhr.send(params);
     }
 
     // ایجاد 50 دایره با موقعیت و رنگ تصادفی
-    for (var i = 0; i < 15; i++) {
+    for (var i = 0; i < 50; i++) {
         var x = Math.random() * (canvas.width - 40) + 20;
         var y = Math.random() * (canvas.height - 40) + 20;
-        var radius = 70;
+        var radius = 20;
         var color = "#" + ((Math.random() * 0xffffff) << 0).toString(16);
         var title = "عنوان " + (i + 1);
         var dx = Math.random() * 2 - 1; // سرعت حرکت افقی
@@ -120,5 +135,4 @@
     canvas.addEventListener("click", checkClick);
 
 </script>
-</body>
 </html>
